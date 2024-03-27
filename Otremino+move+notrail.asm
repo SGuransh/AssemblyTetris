@@ -20,26 +20,27 @@ y_offset: .word 0
 .text
 #...
 main:
-lw $a0, sq1_x # loading x with 0
-lw $a1, sq1_y # laoding y with 0
-lw $a2, red # laoding y with 0
+# coming here and drawing all 4 squares with given x and y
+lw $a0, sq1_x 
+lw $a1, sq1_y 
+lw $a2, red 
 jal make_sq_w_edges
 
-lw $a0, sq2_x # loading x with 0
-lw $a1, sq2_y # laoding y with 0
-lw $a2, red # laoding y with 0
-jal make_sq_w_edges
-
-
-lw $a0, sq3_x # loading x with 0
-lw $a1, sq3_y # laoding y with 0
-lw $a2, red # laoding y with 0
+lw $a0, sq2_x
+lw $a1, sq2_y 
+lw $a2, red
 jal make_sq_w_edges
 
 
-lw $a0, sq4_x # loading x with 0
-lw $a1, sq4_y # laoding y with 0
-lw $a2, red # laoding y with 0
+lw $a0, sq3_x
+lw $a1, sq3_y
+lw $a2, red 
+jal make_sq_w_edges
+
+
+lw $a0, sq4_x 
+lw $a1, sq4_y 
+lw $a2, red
 jal make_sq_w_edges
 
 
@@ -114,6 +115,9 @@ lw $t9, white
 sw $t9, 0($t2)
 jr $ra
 
+
+
+#coming here if key press
 keyboard_input:
 li $t9, 0
 lw $a0, 4($t0)                  
@@ -125,8 +129,8 @@ beq $a0, 100, respond_to_D
 j main
 
 respond_to_A:
-jal make_black_background_init
-lw $t9, x_offset
+jal make_black_background_init # making all currently drawn squares black before the change 
+lw $t9, x_offset # changing all the global values by needed amount
 addi $t9, $t9, -10
 sw $t9, x_offset
 lw $t9, sq1_x
@@ -146,8 +150,8 @@ addi $t9, $t9, -10
 sw $t9, sq4_x
 j main
 respond_to_W:
-jal make_black_background_init
-lw $t9, y_offset
+jal make_black_background_init # making all currently drawn squares black before the change
+lw $t9, y_offset # changing all the global values by needed amount
 addi $t9, $t9, -10
 sw $t9, y_offset
 lw $t9, sq1_y
@@ -164,8 +168,8 @@ addi $t9, $t9, -10
 sw $t9, sq4_y
 j main
 respond_to_S:
-jal make_black_background_init
-lw $t9, y_offset
+jal make_black_background_init # making all currently drawn squares black before the change
+lw $t9, y_offset # changing all the global values by needed amount
 addi $t9, $t9, 10
 sw $t9, y_offset
 lw $t9, sq1_y
@@ -182,8 +186,8 @@ addi $t9, $t9, 10
 sw $t9, sq4_y
 j main
 respond_to_D:
-jal make_black_background_init
-lw $t9, x_offset
+jal make_black_background_init # making all currently drawn squares black before the change
+lw $t9, x_offset # changing all the global values by needed amount
 addi $t9, $t9, 10
 sw $t9, x_offset
 lw $t9, sq1_x
@@ -203,28 +207,30 @@ respond_to_Q:
 	li $v0, 10                      # Quit gracefully
 	syscall
 
+
+
 make_black_background_init:
 lw $t0, displayaddress  # $t0 = base address for display
 
 addi $a2, $zero, 10     # set length of line to 8
 addi $a3, $zero, 10      # set length of line to 8
-addi $sp, $sp, -4
+addi $sp, $sp, -4 # saving current stack pointer 
 sw $ra, 0($sp)
-lw $a0, sq1_x   # set x coordinate of line to 2
-lw $a1, sq1_y     # set x coordinate of line to 2
-jal draw_rectangle        # call the rectangle-drawing function
-lw $a0, sq2_x   # set x coordinate of line to 2
-lw $a1, sq2_y     # set x coordinate of line to 2
-jal draw_rectangle        # call the rectangle-drawing function
-lw $a0, sq3_x   # set x coordinate of line to 2
-lw $a1, sq3_y     # set x coordinate of line to 2
-jal draw_rectangle        # call the rectangle-drawing function
-lw $a0, sq3_x   # set x coordinate of line to 2
-lw $a1, sq3_y     # set x coordinate of line to 2
-jal draw_rectangle        # call the rectangle-drawing function
-lw $a0, sq4_x   # set x coordinate of line to 2
+lw $a0, sq1_x   
+lw $a1, sq1_y 
+jal draw_rectangle  # drawing 10x10 black at the above coord
+lw $a0, sq2_x  
+lw $a1, sq2_y 
+jal draw_rectangle # drawing 10x10 black at the above coord
+lw $a0, sq3_x   
+lw $a1, sq3_y   
+jal draw_rectangle # drawing 10x10 black at the above coord       
+lw $a0, sq3_x  
+lw $a1, sq3_y     
+jal draw_rectangle # drawing 10x10 black at the above coord
+lw $a0, sq4_x  
 lw $a1, sq4_y   
-lw $ra, 0($sp)
+lw $ra, 0($sp) # below is the final jump, it will need to return to where the function make_background_init was called
 addi $sp, $sp, 4
 j draw_rectangle
 
