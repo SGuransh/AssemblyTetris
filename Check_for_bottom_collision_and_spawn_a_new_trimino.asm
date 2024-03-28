@@ -1040,6 +1040,12 @@ initialize_new_trimino:
     li $t3, 0
     sw $t2, pr_sq4_x
     sw $t3, pr_sq4_y
+
+    li $t2, 45
+    li $t3, 51
+    sw $t2, x_offset
+    sw $t3, y_offset
+
 jr $ra
     
     
