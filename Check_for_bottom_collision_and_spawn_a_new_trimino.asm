@@ -871,6 +871,8 @@ end_update:
     li $v0, 0
     addi $sp, $sp, -4
     sw $ra, 0($sp)
+        li $a2, 0
+        li $a3, 10
         jal check_for_bottom_collision      # Check for bottom collision
     lw $ra, 0($sp)                      # This would make the return value $v0 to 1 if it is true and spawn a new trimino
     addi $sp, $sp, 4                    # If the return value is 1 then do not drop down
@@ -939,7 +941,15 @@ check_for_bottom_collision:
     # Make the current trimmino black so that we do not observe any collisions with it
     addi $sp, $sp, -4 # saving current stack pointer 
     sw $ra, 0($sp)
+    addi $sp, $sp, -4 # saving current stack pointer 
+    sw $a2, 0($sp)
+    addi $sp, $sp, -4 # saving current stack pointer 
+    sw $a3, 0($sp)
     jal make_black_background_init
+    lw $a3, 0($sp) 
+    addi $sp, $sp, 4
+    lw $a2, 0($sp) 
+    addi $sp, $sp, 4
     lw $ra, 0($sp) 
     addi $sp, $sp, 4
     
@@ -1040,12 +1050,11 @@ initialize_new_trimino:
     li $t3, 0
     sw $t2, pr_sq4_x
     sw $t3, pr_sq4_y
-
+    
     li $t2, 45
     li $t3, 51
     sw $t2, x_offset
     sw $t3, y_offset
-
 jr $ra
     
     
