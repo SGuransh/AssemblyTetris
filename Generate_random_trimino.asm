@@ -7,8 +7,14 @@ black: .word 0x000000
 red: .word 0xff0000
 white: .word 0xffffff
 cyan: .word 0x00FFFF
+yellow: .word 0xFFFF00
+aqua: .word 0x008080
+silver: .word 0xC0C0C0
+purple: .word 0x800080
+green: .word 0x00FF00
 ADDR_KBRD: .word 0xffff0000
 which_wall: .word 0
+color_in_use: .word 0x00FF00
 
 sq1_x: .word 25 sq1_y: .word 51
 sq2_x: .word 15 sq2_y: .word 51
@@ -38,26 +44,29 @@ jal make_walls
 jal draw_checkers       # call the draw checkers function
 
 game_loop:
+
+# jal check_for_ending
+
 lw $a0, sq1_x 
 lw $a1, sq1_y 
-lw $a2, red 
+lw $a2, color_in_use
 jal make_sq_w_edges
 
 lw $a0, sq2_x
 lw $a1, sq2_y 
-lw $a2, red
+lw $a2, color_in_use
 jal make_sq_w_edges
 
 
 lw $a0, sq3_x
 lw $a1, sq3_y
-lw $a2, red 
+lw $a2, color_in_use
 jal make_sq_w_edges
 
 
 lw $a0, sq4_x 
 lw $a1, sq4_y 
-lw $a2, red
+lw $a2, color_in_use
 jal make_sq_w_edges
 
 
@@ -1164,7 +1173,7 @@ make_new_trimino:
     # First we make the trimino at the bottom collision and then update the starting values
     lw $a0, sq1_x 
     lw $a1, sq1_y 
-    lw $a2, red 
+    lw $a2, color_in_use
     addi $sp, $sp, -4 # saving current stack pointer 
     sw $ra, 0($sp)
     jal make_sq_w_edges
@@ -1173,7 +1182,7 @@ make_new_trimino:
     
     lw $a0, sq2_x
     lw $a1, sq2_y 
-    lw $a2, red
+    lw $a2, color_in_use
     addi $sp, $sp, -4 # saving current stack pointer 
     sw $ra, 0($sp)
     jal make_sq_w_edges
@@ -1183,7 +1192,7 @@ make_new_trimino:
     
     lw $a0, sq3_x
     lw $a1, sq3_y
-    lw $a2, red 
+    lw $a2, color_in_use
     addi $sp, $sp, -4 # saving current stack pointer 
     sw $ra, 0($sp)
     jal make_sq_w_edges
@@ -1193,11 +1202,17 @@ make_new_trimino:
     
     lw $a0, sq4_x 
     lw $a1, sq4_y 
-    lw $a2, red
+    lw $a2, color_in_use
     addi $sp, $sp, -4 # saving current stack pointer 
     sw $ra, 0($sp)
     jal make_sq_w_edges
     lw $ra, 0($sp) 
+    addi $sp, $sp, 4
+    
+    addi $sp, $sp, -4
+    sw $ra, 0($sp)
+        jal Change_colour_in_use
+    lw $ra, 0($sp)
     addi $sp, $sp, 4
     
     addi $sp, $sp, -4 # saving current stack pointer 
@@ -1252,4 +1267,43 @@ drop_down:
     addi $t9, $t9, 10
     sw $t9, sq4_y
 jr $ra
+
+Change_colour_in_use:
+    li $v0, 42
+    li $a0, 0
+    li $a1, 7
+    syscall
+    beq $a0, 0, TO_AQUA
+    beq $a0, 1, TO_YELLOW
+    beq $a0, 2, TO_SILVER
+    beq $a0, 3, TO_PURPLE
+    beq $a0, 4, TO_GREEN
+    beq $a0, 5, TO_CYAN
+    beq $a0, 6, TO_RED
+    TO_AQUA:
+    lw $t0, aqua
+    j SET_COLOUR
+    TO_YELLOW:
+    lw $t0, yellow
+    j SET_COLOUR
+    TO_SILVER:
+    lw $t0, silver
+    j SET_COLOUR
+    TO_PURPLE:
+    lw $t0, purple
+    j SET_COLOUR
+    TO_GREEN:
+    lw $t0, green
+    j SET_COLOUR
+    TO_CYAN:
+    lw $t0, cyan
+    j SET_COLOUR
+    TO_RED:
+    lw $t0, red
+    j SET_COLOUR
+    SET_COLOUR:
+    sw $t0, color_in_use
+jr $ra
     
+# check_for_ending:
+    # # To be implemented
