@@ -30,6 +30,8 @@ pr_sq2_x: .word 0 pr_sq2_y: .word 0
 pr_sq3_x: .word 0 pr_sq3_y: .word 0
 pr_sq4_x: .word 0 pr_sq4_y: .word 0
 
+sleep_time: .word 400
+
 
 
 .text
@@ -934,8 +936,9 @@ jr $ra
 
 end_update:
     # The call to sleep for a second
+    lw $t0, sleep_time
     li $v0 , 32
-    li $a0 , 400
+    add $a0 , $zero, $t0 
     syscall
     
     li $v0, 0
@@ -959,6 +962,10 @@ end_update:
         jal check_if_any_row_is_completed
     lw $ra, 0($sp)
     addi $sp, $sp, 4
+    
+    lw $t0, sleep_time
+    addi $t0, $t0, -3
+    sw $t0, sleep_time
     
     jr $ra
 skip_making_new_trimino:
